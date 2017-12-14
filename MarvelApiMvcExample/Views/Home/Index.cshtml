@@ -1,0 +1,70 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+@using (Html.BeginForm("DetalhesPersonagem", "Home", FormMethod.Post, new {@id = "form"}))
+{
+	<hr/>
+	<form>
+		<fieldset>
+			<legend>Heróis Marvel</legend>
+			<div class="form-group">
+				<label for="exampleSelect1">Nome do Personagem</label>
+				<input class="form-control form-control-lg" type="text" placeholder="Nome do Personagem" id="name" name="name" style="width: 400px">
+				<input type="submit" value="Enviar" class="form-control" style="width: 100px;float: left"/>
+			</div>
+		</fieldset>
+	</form>
+}
+	
+<hr/>
+@foreach (var itens in ViewBag.ListaPersonagens)
+{
+	<div class="card border-primary mb-3" style="max-width: 20rem; margin-left: 30px;float:left">
+		<div class="card-header">@itens.Nome</div>
+		<div class="card-body">
+			<h4 class="card-title"><img src="@itens.UrlImagem"/></h4>
+
+		</div>
+	</div>
+}
+<div>
+	<ul class="pagination">
+		<li class="page-item disabled">
+			<a class="page-link" href="#">&laquo;</a>
+		</li>
+		<li class="page-item active">
+			<a class="page-link" href="@Url.Content("~/Home/Index/1")">1</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link"href="@Url.Content("~/Home/Index/2")">2</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/3")">3</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/")">4</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/5")">5</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/6")">6</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/7")">7</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/8")">8</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/1")">9</a>
+		</li>
+		<li class="page-item">
+			<a class="page-link" href="@Url.Content("~/Home/Index/10")">10</a>
+		</li>
+	
+		<li class="page-item">
+			<a class="page-link" href="#">&raquo;</a>
+		</li>
+	</ul>
+</div>

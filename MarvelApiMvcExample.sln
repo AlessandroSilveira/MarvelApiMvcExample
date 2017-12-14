@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27205.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarvelApiMvcExample", "MarvelApiMvcExample\MarvelApiMvcExample.csproj", "{79371A87-B006-42B6-917A-96D668D6FBBD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79371A87-B006-42B6-917A-96D668D6FBBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79371A87-B006-42B6-917A-96D668D6FBBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79371A87-B006-42B6-917A-96D668D6FBBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79371A87-B006-42B6-917A-96D668D6FBBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5C367C3F-9A66-4138-8447-14B003C926B3}
+	EndGlobalSection
+EndGlobal
