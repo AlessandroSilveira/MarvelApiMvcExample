@@ -14,27 +14,42 @@ namespace MarvelApiMvcExample.Controllers
 {
 	public class HomeController : Controller
 	{
-		public IActionResult Index([FromServices] IConfiguration config)
-		{
-			
-			var resultado = ChamadaAPIMarvel(config);
+	    private readonly IConfiguration config;
+
+	    public HomeController(IConfiguration config)
+	    {
+	        this.config = config;
+	    }
+
+	    public IActionResult Index(int? pagina)
+	    {
+	        if (pagina.Equals(null))
+	            pagina = 0;
+            
+
+			var resultado = ChamadaApiMarvel(pagina);
 
 			var personagens = new List<Personagem>();
+	        var totalItens = resultado.data.total;
+	        int totalpaginas = totalItens / 20;
+
 
 			for (var i = 0; i < resultado.data.results.Count; i++)
 				personagens.Add(new Personagem
 				{
 					Nome = resultado.data.results[i].name,
 					Descricao = resultado.data.results[i].description,
-					UrlImagem = resultado.data.results[0].thumbnail.path + "." +
-					            resultado.data.results[0].thumbnail.extension
+					UrlImagem = resultado.data.results[i].thumbnail.path + "/portrait_incredible"+ "." +
+					            resultado.data.results[i].thumbnail.extension
 				});
 
-			ViewBag.ListaPersonagens = personagens;
+	        ViewBag.totalpaginas = Convert.ToInt32(totalpaginas);
+
+            ViewBag.ListaPersonagens = personagens;
 			return View();
 		}
 
-		private dynamic ChamadaAPIMarvel(IConfiguration config)
+		private dynamic ChamadaApiMarvel(int? pagina)
 		{
 			using (var client = new HttpClient())
 			{
@@ -48,7 +63,7 @@ namespace MarvelApiMvcExample.Controllers
 
 				var response = client.GetAsync(config.GetSection("MarvelComicsAPI:BaseUrl").Value +
 				                               $"characters?ts={ts}&apikey={publicKey}&hash={hash}&" +
-				                               $"limit=20").Result;
+				                               $"offset={pagina*20}&limit=20").Result;
 				response.EnsureSuccessStatusCode();
 				var conteudo = response.Content.ReadAsStringAsync().Result;
 
@@ -66,8 +81,8 @@ namespace MarvelApiMvcExample.Controllers
 			return BitConverter.ToString(bytesHash).ToLower().Replace("-", string.Empty);
 		}
 
-		[HttpPost]
-		public IActionResult DetalhesPersonagem([FromServices] IConfiguration config, string name)
+		
+		public IActionResult DetalhesPersonagem(string name )
 		{
 			Personagem personagem;
 			using (var client = new HttpClient())
@@ -108,6 +123,8 @@ namespace MarvelApiMvcExample.Controllers
 			}
 			return View(personagem);
 		}
+
+
 
 		public IActionResult About()
 		{
