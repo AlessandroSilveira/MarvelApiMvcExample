@@ -58,7 +58,7 @@ namespace MarvelApiMvcExample.Controllers
 
 				var ts = DateTime.Now.Ticks.ToString();
 				var publicKey = config.GetSection("MarvelComicsAPI:PublicKey").Value;
-				var hash = GerarHash(ts, publicKey,
+				var hash = GeradorDeHash.GerarHash(ts, publicKey,
 					config.GetSection("MarvelComicsAPI:PrivateKey").Value);
 
 				var response = client.GetAsync(config.GetSection("MarvelComicsAPI:BaseUrl").Value +
@@ -71,20 +71,11 @@ namespace MarvelApiMvcExample.Controllers
 				return resultado;
 			}
 		}
-
-		
-		private string GerarHash(string ts, string publicKey, string privateKey)
-		{
-			var bytes = Encoding.UTF8.GetBytes(ts + privateKey + publicKey);
-			var gerador = MD5.Create();
-			var bytesHash = gerador.ComputeHash(bytes);
-			return BitConverter.ToString(bytesHash).ToLower().Replace("-", string.Empty);
-		}
-
 		
 		public IActionResult DetalhesPersonagem(string name )
 		{
 			Personagem personagem;
+			dynamic resultado;
 			using (var client = new HttpClient())
 			{
 				client.DefaultRequestHeaders.Accept.Clear();
@@ -92,7 +83,7 @@ namespace MarvelApiMvcExample.Controllers
 
 				var ts = DateTime.Now.Ticks.ToString();
 				var publicKey = config.GetSection("MarvelComicsAPI:PublicKey").Value;
-				var hash = GerarHash(ts, publicKey,
+				var hash = GeradorDeHash.GerarHash(ts, publicKey,
 					config.GetSection("MarvelComicsAPI:PrivateKey").Value);
 
 				var response = client.GetAsync(config.GetSection("MarvelComicsAPI:BaseUrl").Value +
@@ -100,27 +91,26 @@ namespace MarvelApiMvcExample.Controllers
 				                               $"name={name}").Result;
 				response.EnsureSuccessStatusCode();
 				var conteudo = response.Content.ReadAsStringAsync().Result;
-
-				dynamic resultado = JsonConvert.DeserializeObject(conteudo);
-
-				if (resultado.data.results.Count > 0)
-					personagem = new Personagem
-					{
-						Nome = resultado.data.results[0].name,
-						Descricao = resultado.data.results[0].description,
-						UrlImagem = resultado.data.results[0].thumbnail.path + "/portrait_incredible" + "." +
-						            resultado.data.results[0].thumbnail.extension,
-						UrlWiki = resultado.data.results[0].urls[1].url
-					};
-				else
-					personagem = new Personagem
-					{
-						Nome = "",
-						Descricao = "Personagem não encontrado",
-						UrlImagem = "",
-						UrlWiki = ""
-					};
+				resultado = JsonConvert.DeserializeObject(conteudo);
 			}
+
+			if (resultado.data.results.Count > 0)
+				personagem = new Personagem
+				{
+					Nome = resultado.data.results[0].name,
+					Descricao = resultado.data.results[0].description,
+					UrlImagem = resultado.data.results[0].thumbnail.path + "/portrait_incredible" + "." +
+					            resultado.data.results[0].thumbnail.extension,
+					UrlWiki = resultado.data.results[0].urls[1].url
+				};
+			else
+				personagem = new Personagem
+				{
+					Nome = "",
+					Descricao = "Personagem não encontrado",
+					UrlImagem = "",
+					UrlWiki = ""
+				};
 			return View(personagem);
 		}
 
