@@ -14,85 +14,49 @@ namespace MarvelApiMvcExample.Controllers
 {
 	public class HomeController : Controller
 	{
-	    private readonly IConfiguration config;
 
-	    public HomeController(IConfiguration config)
-	    {
-	        this.config = config;
-	    }
+		private readonly IConcreteApiMarvel _concreteApiMarvel;
 
-	    public IActionResult Index(int? pagina)
-	    {
-	        if (pagina.Equals(null))
-	            pagina = 0;
-            
+		public HomeController(IConcreteApiMarvel concreteApiMarvel)
+		{
+			_concreteApiMarvel = concreteApiMarvel;
+		}
+
+		public IActionResult Index(int pagina)
+		{
+			if (pagina.Equals(null))
+				pagina = 0;
 
 			var resultado = ChamadaApiMarvel(pagina);
 
 			var personagens = new List<Personagem>();
-	        var totalItens = resultado.data.total;
-	        int totalpaginas = totalItens / 20;
-
+			var totalItens = resultado.data.total;
+			int totalpaginas = totalItens / 20;
 
 			for (var i = 0; i < resultado.data.results.Count; i++)
 				personagens.Add(new Personagem
 				{
 					Nome = resultado.data.results[i].name,
 					Descricao = resultado.data.results[i].description,
-					UrlImagem = resultado.data.results[i].thumbnail.path + "/portrait_incredible"+ "." +
-					            resultado.data.results[i].thumbnail.extension
+					UrlImagem = resultado.data.results[i].thumbnail.path + "/portrait_incredible" + "." +
+								resultado.data.results[i].thumbnail.extension
 				});
 
-	        ViewBag.totalpaginas = Convert.ToInt32(totalpaginas);
+			ViewBag.totalpaginas = Convert.ToInt32(totalpaginas);
 
-            ViewBag.ListaPersonagens = personagens;
+			ViewBag.ListaPersonagens = personagens;
 			return View();
 		}
 
-		private dynamic ChamadaApiMarvel(int? pagina)
+		private dynamic ChamadaApiMarvel(int pagina)
 		{
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-				var ts = DateTime.Now.Ticks.ToString();
-				var publicKey = config.GetSection("MarvelComicsAPI:PublicKey").Value;
-				var hash = GeradorDeHash.GerarHash(ts, publicKey,
-					config.GetSection("MarvelComicsAPI:PrivateKey").Value);
-
-				var response = client.GetAsync(config.GetSection("MarvelComicsAPI:BaseUrl").Value +
-				                               $"characters?ts={ts}&apikey={publicKey}&hash={hash}&" +
-				                               $"offset={pagina*20}&limit=20").Result;
-				response.EnsureSuccessStatusCode();
-				var conteudo = response.Content.ReadAsStringAsync().Result;
-
-				dynamic resultado = JsonConvert.DeserializeObject(conteudo);
-				return resultado;
-			}
+			return _concreteApiMarvel.ChamadaApiMarvel(pagina);
 		}
-		
-		public IActionResult DetalhesPersonagem(string name )
+
+		public IActionResult DetalhesPersonagem(string name)
 		{
 			Personagem personagem;
-			dynamic resultado;
-			using (var client = new HttpClient())
-			{
-				client.DefaultRequestHeaders.Accept.Clear();
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-				var ts = DateTime.Now.Ticks.ToString();
-				var publicKey = config.GetSection("MarvelComicsAPI:PublicKey").Value;
-				var hash = GeradorDeHash.GerarHash(ts, publicKey,
-					config.GetSection("MarvelComicsAPI:PrivateKey").Value);
-
-				var response = client.GetAsync(config.GetSection("MarvelComicsAPI:BaseUrl").Value +
-				                               $"characters?ts={ts}&apikey={publicKey}&hash={hash}&" +
-				                               $"name={name}").Result;
-				response.EnsureSuccessStatusCode();
-				var conteudo = response.Content.ReadAsStringAsync().Result;
-				resultado = JsonConvert.DeserializeObject(conteudo);
-			}
+			var resultado = _concreteApiMarvel.ChamadaApiMarvel(name);
 
 			if (resultado.data.results.Count > 0)
 				personagem = new Personagem
@@ -100,7 +64,7 @@ namespace MarvelApiMvcExample.Controllers
 					Nome = resultado.data.results[0].name,
 					Descricao = resultado.data.results[0].description,
 					UrlImagem = resultado.data.results[0].thumbnail.path + "/portrait_incredible" + "." +
-					            resultado.data.results[0].thumbnail.extension,
+								resultado.data.results[0].thumbnail.extension,
 					UrlWiki = resultado.data.results[0].urls[1].url
 				};
 			else
@@ -113,8 +77,6 @@ namespace MarvelApiMvcExample.Controllers
 				};
 			return View(personagem);
 		}
-
-
 
 		public IActionResult About()
 		{
@@ -132,7 +94,7 @@ namespace MarvelApiMvcExample.Controllers
 
 		public IActionResult Error()
 		{
-			return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}
 }

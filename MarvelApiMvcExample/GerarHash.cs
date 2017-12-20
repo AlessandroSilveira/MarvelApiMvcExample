@@ -4,9 +4,9 @@ using System.Text;
 
 namespace MarvelApiMvcExample
 {
-	public class GeradorDeHash
+	public class GeradorDeHash : IGeradorDeHash
 	{
-		public static string GerarHash(string ts, string publicKey, string privateKey)
+		public string GerarHash(string ts, string publicKey, string privateKey)
 		{
 			var bytes = Encoding.UTF8.GetBytes(ts + privateKey + publicKey);
 			var gerador = MD5.Create();
