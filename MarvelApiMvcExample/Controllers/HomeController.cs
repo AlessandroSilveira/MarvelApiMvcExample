@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
 using MarvelApiMvcExample.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace MarvelApiMvcExample.Controllers
 {
@@ -27,7 +21,7 @@ namespace MarvelApiMvcExample.Controllers
 			if (pagina.Equals(null))
 				pagina = 0;
 
-			var resultado = ChamadaApiMarvel(pagina);
+			var resultado = _concreteApiMarvel.ChamadaApiMarvel(pagina);
 
 			var personagens = new List<Personagem>();
 			var totalItens = resultado.data.total;
@@ -47,11 +41,7 @@ namespace MarvelApiMvcExample.Controllers
 			ViewBag.ListaPersonagens = personagens;
 			return View();
 		}
-
-		private dynamic ChamadaApiMarvel(int pagina)
-		{
-			return _concreteApiMarvel.ChamadaApiMarvel(pagina);
-		}
+		
 
 		public IActionResult DetalhesPersonagem(string name)
 		{
